@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Autorespondery</h1>
+                <br>
+                <br>
+                <div id="autoresponders">
+                    <% if (!settings.autoresponders?.length) { %>
+                        <div class="div-prefix" style="width: 60%; text-align: left;" id="no-autoresponders">
+                            <p style="float: none;">Nie posiadasz autoresponderów</p>
+                        </div>
+                    <% } %>
+                    <% settings.autoresponders?.forEach(p => { %>
+                        <div class="div-prefix" style="width: 60%; text-align: left; min-height: 70px" id="<%= p.id %>">
+                            <button onclick="removeAutoresponder('<%= p.id %>')"><i class="bx bx-trash"></i></button>
+                            <p style="float: none;">Wiadomość: <%= p.msg %></p>
+                            <br>
+                            <p style="float: none;">Odpowiedź: <%= p.reply %></p>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj Autoresponder</label>
+                <br>
+                <br>
+                <input type="text" id="msg" placeholder="Wiadomość" maxlength="2000">
+                <br>
+                <br>
+                <input type="text" id="reply" placeholder="Odpowiedź" maxlength="2000">
+                <br>
+                <br>
+                <button onclick="addAutoresponder()" class="btn-add">Dodaj</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    const removeAutoresponder = async (arid) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/autoresponders/remove", {
+            method: "POST",
+            body: JSON.stringify({ ar: arid }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(arid).parentNode.id === "autoresponders") document.getElementById(arid).parentNode.removeChild(document.getElementById(arid));
+            else document.getElementById(arid).parentNode.remove();
+
+            if (document.getElementById("autoresponders").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-autoresponders" class="div-prefix" style="width: 60%"><p>Nie posiadasz autoresponderów</p></div>`;
+                const mainDiv = document.getElementById("autoresponders");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addAutoresponder = async () => {
+        const msg = document.getElementById("msg").value;
+        const reply = document.getElementById("reply").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/autoresponders/add", {
+            method: "POST",
+            body: JSON.stringify({ msg, reply }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const channelDiv = document.createElement("div");
+            channelDiv.innerHTML = `<div class="div-prefix" style="width: 60%; text-align: left; min-height: 70px" id="${body.data.id}"><button onclick="removeAutoresponder('${body.data.id}')"><i class="bx bx-trash"></i></button><p style="float: none;">Wiadomość: ${msg}</p><br><p style="float: none;">Odpowiedź: ${reply}</p></div>`;
+            const mainDiv = document.getElementById("autoresponders");
+            mainDiv.appendChild(channelDiv);
+
+            if (document.getElementById("no-autoresponders")) {
+                if (document.getElementById("no-autoresponders").parentNode.id === "autoresponders") document.getElementById("no-autoresponders").parentNode.removeChild(document.getElementById("no-autoresponders"));
+                else document.getElementById("no-autoresponders").parentNode.remove();
+            }
+            document.getElementById("msg").value = "";
+            document.getElementById("reply").value = "";
+        }
+    };
+</script>

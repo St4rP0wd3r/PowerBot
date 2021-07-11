@@ -1,0 +1,85 @@
+<!-- All Website Copright Aleks1123 -->
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Prefixy</h1>
+                <br>
+                <br>
+                <div id="prefixes">
+                    <% settings.prefixes.forEach(p => { %>
+                        <div class="div-prefix" style="width: 60%" id="<%= p %>">
+                            <p><%= p; %></p>
+                            <button onclick="delPrefix('<%= p %>')"><i class="bx bx-trash"></i></button>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj Prefix</label>
+                <br>
+                <br>
+                <input type="text" id="prefixProvied" placeholder="Nowy prefix" maxlength="5">
+                <br>
+                <br>
+                <button onclick="addPrefix()" class="btn-add">Dodaj</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+
+    const delPrefix = async (prefix) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id; %>/main/prefixes/remove", {
+            method: "POST",
+            body: JSON.stringify({ prefix: prefix }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) document.getElementById(prefix).style.display = "none";
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addPrefix = async () => {
+        const prefix = document.getElementById("prefixProvied").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id; %>/main/prefixes/add", {
+            method: "POST",
+            body: JSON.stringify({ prefix: prefix }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const prefixDiv = document.createElement("div");
+            prefixDiv.innerHTML = `<div class="div-prefix" style="width: 60%" id="${prefix}"><p>${prefix}</p><button onclick="delPrefix('${prefix}')"><i class="bx bx-trash"></i></button></div>`;
+            const mainDiv = document.getElementById("prefixes");
+            mainDiv.appendChild(prefixDiv);
+            document.getElementById("prefixProvied").value = "";
+        }
+    };
+</script>
+</html>

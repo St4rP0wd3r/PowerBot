@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/profile/beta" class="btn-dash">Powrót</a>
+        </div>
+        <br>
+        <br>
+        <div class="option-das">
+            <h1>Backupy</h1>
+            <br>
+            <%
+            let formatedBackups = [];
+            for (const backup of Object.keys(userSettings.backups)) {
+                const object = {};
+                Object.assign(object, userSettings.backups[backup]);
+                object.id = backup;
+                formatedBackups.push(object);
+            }
+            %>
+            <div id="backups">
+                <% if (!formatedBackups.length) { %>
+                    <div class="div-prefix" style="width: 60%" id="no-backups">
+                        <p>Nie posiadasz żadnych backupów</p>
+                    </div>
+                <% } %>
+                <% formatedBackups.forEach(p => { %>
+                    <div class="div-prefix" style="min-height: 50px; text-align: left;" id="<%= p.roleid; %>">
+                        <button onclick="removeBackup('<%= p.id; %>')"><i class="bx bx-trash"></i></button>
+                        <p style="float: none;">Serwer: <%= p.server.name; %></p>
+                        <p style="float: none;">Data utworzenia: <%= new Date(p.date).toLocaleString() %></p>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+</body>

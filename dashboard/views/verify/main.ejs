@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+
+<body>
+
+<div class="conteiner">
+    <%- include("../elements/navbar") %>
+    <br>
+    <br>
+    <br>
+    <div id="site" style="text-align: center;">
+        <h1>Zweryfikuj Się</h1>
+        <form action="?" method="POST" id="reCAPTCHA">
+            <div class="g-recaptcha" style="display: inline-block;" data-sitekey="<%= siteKey; %>"
+                 data-callback="onSubmit"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function onSubmit () {
+        document.getElementById("reCAPTCHA").submit();
+    }
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+

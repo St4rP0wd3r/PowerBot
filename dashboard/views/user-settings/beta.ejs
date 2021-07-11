@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+
+<body>
+
+<%- include("../elements/navbar") %>
+
+<div class="conteiner">
+    <div class="div-user">
+        <img src="<%= member.displayAvatarURL(); %>">
+        <h1><%= user.username; %>, Witaj w ustawieniach użytkownika!</h1>
+        <p>Możesz tutaj konfigurować swoje backupy, przypomnienia</p>
+        <a href="/dashboard/api/auth/logout" class="btn-logout">Wyloguj</a>
+        <a href="/dashboard" class="btn-dash">Powrót</a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="div-guild">
+            <h1>Backupy</h1>
+            <p>Lista i zarządzanie backupami</p>
+            <br>
+            <a href="/dashboard/profile/beta/backups" class="btn-dash">Wybierz</a>
+        </div>
+        <div class="div-guild">
+            <h1>Przypomnienia</h1>
+            <p>Lista i zarządzanie przypomnieniami</p>
+            <br>
+            <a href="/dashboard/profile/beta/reminders" class="btn-dash">Wybierz</a>
+        </div>
+    </div>
+</div>
+</body>

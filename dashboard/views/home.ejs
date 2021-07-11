@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("partials/imports") %>
+</head>
+
+<body>
+
+
+<%- include("elements/navbar") %>
+<br>
+<br>
+
+<div id="site" style="opacity: 1;">
+    <div class="conteiner">
+        <div class="content-box-one">
+            <p class="blu-sc">Nowa Wersja & Nowy Styl</p>
+            <h1 class="white-sc">Zbuduj swój profesjonalny serwer discord, baw się!</h1>
+            <p class="p-sc">Delover umożliwia wiele funkcjonalnych rzeczy, takich jak moderowanie
+                twojego
+                serwera discord, śmiech do łez a także dashboard!</p>
+            <p class="p-sc">Najlepszy bot do
+                <span class="typed" data-typed-items="Moderowania, Zabawy, Embedów"></span>
+            </p>
+            <a href="https://discord.com/oauth2/authorize?client_id=<%= bot.user.id; %>&scope=bot&permissions=347208"
+               class="btn-invite">Zaproś Bota</a>
+            <a href="/dashboard" class="btn-dash">Zarządzaj swoim Serwerem</a>
+            <img src="/static/assets/delover.png" class="logo-sc">
+        </div>
+    </div>
+    <div class="content-statics">
+        <div class="conteiner">
+            <br><br><br><br><br>
+            <p class="blu-sc">Statystyki</p>
+            <br>
+            <h1>Najlepszy Polski Bot na rynku!</h1>
+            <p class="cont-e">Specjalnie dla Ciebie utworzyliśmy tą zakładkę, abyś widział nasze piękne statystyki!</p>
+            <div class="stats-page">
+                <div class="row">
+                    <div class="card-stats">
+                        <h1>Użytkowników</h1>
+                        <% let totlaMembers = 0; %>
+                        <% bot.guilds.cache.forEach((g) => totlaMembers += g.memberCount) %>
+                        <p><%= totlaMembers %></p>
+                    </div>
+
+                    <div class="card-stats">
+                        <h1>Gildii</h1>
+                        <p><%= bot.guilds.cache.size %></p>
+                    </div>
+
+                    <div class="card-stats">
+                        <h1>Kanałów</h1>
+                        <p><%= bot.channels.cache.size %></p>
+                    </div>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+    <!--    <div class="content-support">-->
+    <!--        <div class="conteiner">-->
+    <!--            <br><br><br><br><br>-->
+    <!--            <h1>Potrzebujesz Pomocy?</h1>-->
+    <!--            <p class="cont-e">Pomożemy Ci dotrzeć tam, gdzie chcesz.</p>-->
+    <!--            <div class="row">-->
+    <!--                <div class="card-help">-->
+    <!--                    <h1>Zauważyłeś błąd?</h1>-->
+    <!--                    <p>Zgłość go najszybciej jak się da, przez komendę <b>report</b>, lub wejdź na nasz serwer-->
+    <!--                        developerski!-->
+    <!--                    </p>-->
+    <!--                </div>-->
+
+    <!--                <div class="card-help">-->
+    <!--                    <h1>Zauważyłeś błąd?</h1>-->
+    <!--                    <p>Zgłość go najszybciej jak się da, przez komendę <b>report</b>, lub wejdź na nasz serwer-->
+    <!--                        developerski!-->
+    <!--                    </p>-->
+    <!--                </div>-->
+
+    <!--                <div class="card-help">-->
+    <!--                    <h1>Zauważyłeś błąd?</h1>-->
+    <!--                    <p>Zgłość go najszybciej jak się da, przez komendę <b>report</b>, lub wejdź na nasz serwer-->
+    <!--                        developerski!-->
+    <!--                    </p>-->
+    <!--                </div>-->
+
+    <!--            </div>-->
+
+    <!--        </div>-->
+    <!--    </div>-->
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+<script>
+    const select = (el, all = false) => {
+        el = el.trim()
+        if (all) {
+            return [...document.querySelectorAll(el)]
+        } else {
+            return document.querySelector(el)
+        }
+    }
+    const typed = select('.typed')
+    if (typed) {
+        let typed_strings = typed.getAttribute('data-typed-items')
+        typed_strings = typed_strings.split(',')
+        new Typed('.typed', {
+            strings: typed_strings,
+            loop: true,
+            typeSpeed: 100,
+            backSpeed: 50,
+            backDelay: 2000
+        });
+    }
+</script>
+<style type="text/css" data-typed-js-css="true">
+    .typed-cursor {
+        opacity: 1;
+    }
+
+    .typed-cursor.typed-cursor--blink {
+        animation: typedjsBlink 0.7s infinite;
+        -webkit-animation: typedjsBlink 0.7s infinite;
+        animation: typedjsBlink 0.7s infinite;
+    }
+
+    @keyframes typedjsBlink {
+        50% {
+            opacity: 0.0;
+        }
+    }
+
+    @-webkit-keyframes typedjsBlink {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+</html>

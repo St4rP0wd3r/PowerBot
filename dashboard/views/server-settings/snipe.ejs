@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Snipe</h1>
+                <br>
+                <label class="switch">
+                    <input type="checkbox" id="status" <%= settings.snipe.status ? "checked" : "" %>>
+                    <span class="slider round"></span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+            </div>
+            <br>
+            <br>
+        </section>
+
+    </div>
+</div>
+</body>
+<script>
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/snipe/", {
+            method: "POST",
+            body: JSON.stringify({ status }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+</script>
+</html>

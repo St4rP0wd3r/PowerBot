@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br>
+        <br>
+        <div class="option-das">
+            <h1>Ogłoszenia</h1>
+            <br>
+            <br>
+            <label>Status</label>
+            <br>
+            <br>
+            <label class="switch">
+                <input type="checkbox" id="status" <%= settings.broadcast.status ? "checked" : ""; %>>
+                <span class="slider round"></span>
+            </label>
+            <br>
+            <br>
+            <br>
+
+            <label>Kolor</label>
+            <br>
+            <input type="color" id="color" value="<%= settings.broadcast.color; %>">
+            <br>
+            <br>
+            <label>Kanał</label>
+            <br>
+            <br>
+            <select id="channel">
+                <option value="Brak">Kanał z komendą</option>
+                <% guild.channels.cache.filter((r) => r.type !== "voice" && r.type !== "category").sort((a, b) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                    <% if (r.id === settings.broadcast.channel) { %>
+                        <option value="<%= r.id; %>" selected="selected"><%= r.name; %></option>
+                    <% } else { %>
+                        <option value="<%= r.id; %>"><%= r.name; %></option>
+                    <% } %>
+                <% }); %>
+            </select>
+            <br>
+            <br><br>
+            <button onclick="save()" class="btn-add">Zapisz</button>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    const save = async () => {
+        const channel = document.getElementById("channel").value;
+        const status = document.getElementById("status").value;
+        const color = document.getElementById("color").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/broadcast/", {
+            method: "POST",
+            body: JSON.stringify({ status, channel, color }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+</script>
+</body>

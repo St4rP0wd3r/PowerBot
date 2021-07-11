@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/profile/beta" class="btn-dash">Powrót</a>
+        </div>
+        <br>
+        <br>
+        <div class="option-das">
+            <h1>Przypomnienia</h1>
+            <br>
+            <div id="reminders">
+                <% if (!reminders.length) { %>
+                    <div class="div-prefix" style="width: 60%" id="no-reminders">
+                        <p>Nie posiadasz żadnych przypomnień</p>
+                    </div>
+                <% } %>
+                <% reminders.forEach(p => { %>
+                    <div class="div-prefix" style="min-height: 100px; text-align: left; " id="<%= p.remindid; %>">
+                        <button onclick="removeReminder('<%= p.remindid; %>')"><i class="bx bx-trash"></i></button>
+                        <p style="float: none;">Tekst: <%= p.text; %></p>
+                        <p style="float: none; max-width: 1000px">Data zakończenia: <%= moment(p.end).format("LLLL") %> (<%= moment(p.end).fromNow() %>)</p>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+</script>
+</body>

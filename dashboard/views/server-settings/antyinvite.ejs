@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Antyinvite</h1>
+                <br>
+                <label class="switch">
+                    <input type="checkbox" id="status" <%= settings.antyinvite.status ? "checked" : "" %>>
+                    <span class="slider round"></span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+            </div>
+            <br>
+            <br>
+            <hr>
+            <br>
+            <br>
+            <div class="option-das">
+                <h1>Lista kanałów omijających</h1>
+                <br>
+                <br>
+                <div id="channels">
+                    <% if (!settings.antyinvite.channels.length) { %>
+                        <div class="div-prefix" style="width: 60%" id="no-channels">
+                            <div class="prefix">
+                                <p>Nie posiadasz żadnych kanałow</p>
+                            </div>
+                        </div>
+                    <% } %>
+                    <% settings.antyinvite.channels.forEach(p => { %>
+                        <div class="div-prefix" style="width: 60%" id="<%= p %>">
+                            <p><%= client.channels.cache.get(p)?.name; %></p>
+                            <button onclick="removeChannel('<%= p %>')"><i class="bx bx-trash"></i></button>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj kanał omijający antyinvite</label>
+                <br>
+                <br>
+                <select id="channel">
+                    <% guild.channels.cache.filter((r) => r.type !== "voice" && r.type !== "category").sort((a, b) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <% if (!settings.antyinvite.channels.includes(r.id)) { %>
+                            <option value="<%= r.id; %>"><%= r.name; %></option>
+                        <% } %>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="addChannel()" class="btn-add">Dodaj</button>
+            </div>
+            <br>
+            <br>
+            <hr>
+            <br>
+            <br>
+            <div class="option-das">
+                <h1>Role bypass</h1>
+                <br>
+                <div id="roles">
+                    <% if (!settings.antyinvite.roles.length) { %>
+                        <div class="div-prefix" style="width: 60%" id="no-roles">
+                            <p>Nie posiadasz żadnych roli</p>
+                        </div>
+                    <% } %>
+                    <% settings.antyinvite.roles.forEach(p => { %>
+                        <div class="div-prefix" style="width: 60%" id="<%= p %>">
+                            <p><%= guild.roles.cache.get(p)?.name; %></p>
+                            <button onclick="removeRole('<%= p %>')"><i class="bx bx-trash"></i></button>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj role bypass</label>
+                <br>
+                <br>
+                <select id="role">
+                    <% guild.roles.cache.filter(x => x.id !== guild.roles.everyone.id && !settings.antyinvite.roles.includes(x.id)).sort((b, a) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <option value="<%= r.id; %>"><%= r.name; %></option>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="addRole()" class="btn-add">Dodaj</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+    const removeChannel = async (channel) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/antyinvite/channels/remove", {
+            method: "POST",
+            body: JSON.stringify({ channel }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(channel).parentNode.id === "channels") document.getElementById(channel).parentNode.removeChild(document.getElementById(channel));
+            else document.getElementById(channel).parentNode.remove();
+
+            if (document.getElementById("channels").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-channels" class="div-prefix" style="width: 60%"><p>Nie posiadasz kanałów</p></div>`;
+                const mainDiv = document.getElementById("channels");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addChannel = async () => {
+        const channel = document.getElementById("channel").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/antyinvite/channels/add", {
+            method: "POST",
+            body: JSON.stringify({ channel }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const channelDiv = document.createElement("div");
+            channelDiv.innerHTML = `<div id="${channel}" class="div-prefix" style="width: 60%"><p>${body.data.channelName}</p><button onclick="removeChannel('${channel}')"><i class="bx bx-trash"></i></button></div>`
+            const mainDiv = document.getElementById("channels");
+            mainDiv.appendChild(channelDiv);
+
+            if (document.getElementById("no-channels")) {
+                if (document.getElementById("no-channels").parentNode.id === "channels") document.getElementById("no-channels").parentNode.removeChild(document.getElementById("no-channels"));
+                else document.getElementById("no-channels").parentNode.remove();
+            }
+        }
+    };
+    const removeRole = async (role) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/antyinvite/roles/remove", {
+            method: "POST",
+            body: JSON.stringify({ role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(role).parentNode.id === "roles") document.getElementById(role).parentNode.removeChild(document.getElementById(role));
+            else document.getElementById(role).parentNode.remove();
+
+            if (document.getElementById("roles").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-roles" class="div-prefix" style="width: 60%"><p>Nie posiadasz roli</p></div>`;
+                const mainDiv = document.getElementById("roles");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<divclass="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addRole = async () => {
+        const role = document.getElementById("role").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/antyinvite/roles/add", {
+            method: "POST",
+            body: JSON.stringify({ role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const roleDiv = document.createElement("div");
+            roleDiv.innerHTML = `<div id="${role}" class="div-prefix" style="width: 60%"><p>${body.data.roleName}</p><button onclick="removeRole('${role}')"><i class="bx bx-trash"></i></button></div>`
+            const mainDiv = document.getElementById("roles");
+            mainDiv.appendChild(roleDiv);
+
+            if (document.getElementById("no-roles")) {
+                if (document.getElementById("no-roles").parentNode.id === "roles") document.getElementById("no-roles").parentNode.removeChild(document.getElementById("no-roles"));
+                else document.getElementById("no-roles").parentNode.remove();
+            }
+        }
+    };
+
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/antyinvite/", {
+            method: "POST",
+            body: JSON.stringify({ status }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    }
+</script>
+</html>

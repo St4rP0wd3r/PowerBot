@@ -1,0 +1,48 @@
+<!--=============-->
+<!-- Navbar File -->
+<!--=============-->
+
+
+<link rel="stylesheet" href="/static/css/navbar.css">
+<nav class="mynavbar">
+    <div class="content">
+        <div class="logo">
+            <a href="/">Delover</a>
+        </div>
+        <ul class="menu-list">
+            <div class="icon cancel-btn">
+                <i class="bx bx-x"></i>
+            </div>
+            <li><a href="/support">Serwer Support</a></li>
+            <li><a href="/add">Dodaj bota</a></li>
+            <li><a href="/privacy">Polityka prywatności</a></li>
+            <% if (req.isAuthenticated()) { %>
+                <li><a href="/dashboard">Panel</a></li>
+            <% } else { %>
+                <li><a href="/dashboard">Zaloguj</a></li>
+            <% } %>
+        </ul>
+        <div class="icon menu-btn">
+            <i class="bx bxs-category-alt"></i>
+        </div>
+    </div>
+</nav>
+
+<script>
+    const body = document.querySelector("body");
+    const navbar = document.querySelector(".mynavbar");
+    const menuBtn = document.querySelector(".menu-btn");
+    const cancelBtn = document.querySelector(".cancel-btn");
+    menuBtn.onclick = () => {
+        navbar.classList.add("show");
+        menuBtn.classList.add("hide");
+        body.classList.add("disabled-nav");
+        if (document.getElementById("site")) document.getElementById("site").style.display = "none";
+    };
+    cancelBtn.onclick = () => {
+        body.classList.remove("disabled-nav");
+        navbar.classList.remove("show");
+        menuBtn.classList.remove("hide");
+        if (document.getElementById("site")) document.getElementById("site").style.display = "inline";
+    };
+</script>

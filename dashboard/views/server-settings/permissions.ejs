@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+    <script>
+        // Auto close alerts
+        $(document).ready(() => {
+            setTimeout(() => {
+                $(".alert").alert("close");
+            }, 3000);
+        });
+    </script>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Lista uprawnień</h1>
+                <br>
+                <br>
+                <div id="permissions">
+                    <% if (!settings.permissions.roles.length) { %>
+                        <div class="div-prefix" style="width: 60%" id="no-permissions">
+                            <p>Nie posiadasz żadnych uprawnień</p>
+                        </div>
+                    <% } %>
+                    <% settings.permissions.roles.forEach(p => { %>
+                        <div class="div-prefix" style="min-height: 50px; text-align: left;" id="<%= p.roleid %>">
+                            <button onclick="removePerm('<%= p.roleid %>')"><i class="bx bx-trash"></i></button>
+                            <p style="float: none;">Permisja: <%= p.perm; %></p>
+                            <p style="float: none;">Rola: <%= guild.roles.cache.get(p.roleid)?.name %></p>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj permisje</label>
+                <br>
+                <br>
+                <select id="perm">
+                    <option>Pomocnik</option>
+                    <option>Moderator</option>
+                    <option>Administrator</option>
+                </select>
+                <br>
+                <br>
+                <label>Rola</label>
+                <br>
+                <br>
+                <select id="role">
+                    <% guild.roles.cache.filter(x => x.id !== guild.roles.everyone.id && !settings.permissions.roles.find(r => r.roleid === x.id)).sort((b, a) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <option value="<%= r.id; %>"><%= r.name; %></option>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="addPerm()" class="btn-add">Dodaj</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+    const removePerm = async (roleid) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/permissions/remove", {
+            method: "POST",
+            body: JSON.stringify({ roleid }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json())
+        if (body.success) {
+            if (document.getElementById(roleid).parentNode.id === "permissions") document.getElementById(roleid).parentNode.removeChild(document.getElementById(roleid));
+            else document.getElementById(roleid).parentNode.remove();
+
+            if (document.getElementById("permissions").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-permissions" class="div-prefix" style="width: 60%"><p>Nie posiadasz żadnych uprawnień</p></div>`;
+                const mainDiv = document.getElementById("permissions");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addPerm = async () => {
+        const role = document.getElementById("role").value;
+        const perm = document.getElementById("perm").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/permissions/add", {
+            method: "POST",
+            body: JSON.stringify({ permission: perm, role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const channelDiv = document.createElement("div");
+            channelDiv.innerHTML = `<div class="div-prefix" style="min-height: 50px; text-align: left;" id="${role}"><button onclick="removePerm('${role}')"><i class="bx bx-trash"></i></button><p style="float: none;">Permisja: ${perm}</p><p style="float: none;">Rola: ${body.data.roleName}</p></div>`
+            const mainDiv = document.getElementById("permissions");
+            mainDiv.appendChild(channelDiv);
+            if (document.getElementById("no-permissions")) {
+                if (document.getElementById("no-permissions").parentNode.id === "permissions") document.getElementById("no-permissions").parentNode.removeChild(document.getElementById("no-permissions"));
+                else document.getElementById("no-permissions").parentNode.remove();
+            }
+        }
+    };
+</script>
+</html>

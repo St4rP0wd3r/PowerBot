@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Autorole</h1>
+                <br>
+                <label class="switch">
+                    <input type="checkbox" id="status" <%= settings.autorole.status ? "checked" : "" %>>
+                    <span class="slider round"></span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+            </div>
+            <br>
+            <br>
+            <hr>
+            <br>
+            <br>
+            <div class="option-das">
+                <h1>Role</h1>
+                <br>
+                <div id="roles">
+                    <% if (!settings.autorole.roles.length) { %>
+                        <div class="div-prefix" style="width: 60%" id="no-roles">
+                            <p>Nie posiadasz żadnych roli</p>
+                        </div>
+                    <% } %>
+                    <% settings.autorole.roles.forEach(p => { %>
+                        <div class="div-prefix" style="width: 60%" id="<%= p %>">
+                            <p><%= guild.roles.cache.get(p)?.name; %></p>
+                            <button onclick="removeRole('<%= p %>')"><i class="bx bx-trash"></i></button>
+                        </div>
+                    <% }) %>
+                </div>
+                <br>
+                <br>
+                <label>Dodaj role</label>
+                <br>
+                <br>
+                <select id="role">
+                    <% guild.roles.cache.filter(x => x.id !== guild.roles.everyone.id && !settings.autorole.roles.includes(x.id)).sort((b, a) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <option value="<%= r.id; %>"><%= r.name; %></option>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="addRole()" class="btn-add">Dodaj</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+    const removeRole = async (role) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/autorole/roles/remove", {
+            method: "POST",
+            body: JSON.stringify({ role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(role).parentNode.id === "roles") document.getElementById(role).parentNode.removeChild(document.getElementById(role));
+            else document.getElementById(role).parentNode.remove();
+
+            if (document.getElementById("roles").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-roles" class="div-prefix" style="width: 60%"><p>Nie posiadasz roli</p></div>`;
+                const mainDiv = document.getElementById("roles");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addRole = async () => {
+        const role = document.getElementById("role").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/autorole/roles/add", {
+            method: "POST",
+            body: JSON.stringify({ role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const roleDiv = document.createElement("div");
+            roleDiv.innerHTML = `<div id="${role}" class="div-prefix" style="width: 60%"><p>${body.data.roleName}</p><button onclick="removeRole('${role}')"><i class="bx bx-trash"></i></button></div>`
+            const mainDiv = document.getElementById("roles");
+            mainDiv.appendChild(roleDiv);
+
+            if (document.getElementById("no-roles")) {
+                if (document.getElementById("no-roles").parentNode.id === "roles") document.getElementById("no-roles").parentNode.removeChild(document.getElementById("no-roles"));
+                else document.getElementById("no-roles").parentNode.remove();
+            }
+        }
+    };
+
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/autorole/", {
+            method: "POST",
+            body: JSON.stringify({ status }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    }
+</script>
+</html>

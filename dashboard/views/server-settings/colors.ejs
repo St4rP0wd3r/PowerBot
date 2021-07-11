@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br>
+        <br>
+        <div class="option-das">
+            <h1>Kolory</h1>
+            <br>
+            <br>
+            <label>Kolor podstawowy</label>
+            <br>
+            <input type="color" id="done" value="<%= settings.colors.done; %>">
+            <br>
+            <br>
+            <br>
+            <label>Kolor błędów</label>
+            <br>
+            <input type="color" id="error" value="<%= settings.colors.error; %>">
+            <br>
+            <br><br>
+            <button onclick="save()" class="btn-add">Zapisz</button>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    const save = async () => {
+        const done = document.getElementById("done").value;
+        const error = document.getElementById("error").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/colors/", {
+            method: "POST",
+            body: JSON.stringify({ done, error }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+</script>
+</body>
