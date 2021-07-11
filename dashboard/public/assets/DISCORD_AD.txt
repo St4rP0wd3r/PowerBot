@@ -1,0 +1,23 @@
+**```diff
+- Szukasz wielofunkcyjnego bota na Twój serwer Discord? -
+```**
+
+🎉 **»** Bardzo dobrze trafiłeś!
+
+😎 **»** Co oferuje Delover?
+```css
+[1] Zaawansowany system moderacji,
+[2] Wiele komend 4FUN,
+[3] Powitania, pożegnania,
+[4] Autorespondery,
+[5] Zarządzanie botem z poziomu strony (DASHBOARD aka PANEL)
+[6] System poziomów na chacie.
+[7] Reaction role
+[8] Wiele komend "narzędzia", np. userinfo, serverinfo
+
+
+[*] I wiele wiele więcej...
+```
+
+***`📌 Serwer support: `*** https://discord.gg/G23e9tUN5q
+***`🔗 Strona internetowa`*** https://delover.pro

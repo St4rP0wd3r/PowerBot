@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("partials/imports") %>
+</head>
+
+<%- include("elements/navbar") %>
+
+<div class="conteiner">
+    <div class="div-user">
+        <img src="<%= member.user.displayAvatarURL(); %>">
+        <h1><%= member.user.username; %>, Witaj w Panelu!</h1>
+        <p>Prosimy o wybranie kategorii!</p>
+        <a href="/dashboard/api/auth/logout" class="btn-logout">Wyloguj</a>
+        <a href="/dashboard" class="btn-dash">Powrót</a>
+    </div>
+    <br>
+    <div class="row">
+        <div class="div-guild">
+            <h1>Prefixy</h1>
+            <p>Ustawienia prefixu</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/main" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Rola wyciszony</h1>
+            <p>Ustawienia roli wyciszony</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/muted" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Kanał modlog</h1>
+            <p>Ustawienia kanału modlog</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/modlog" class="btn-dash">Wybierz</a>
+        </div>
+        <div class="div-guild">
+            <h1>Powitania</h1>
+            <p>Ustaw powitania dla twojego serwera!</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/welcome" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Pożegnania</h1>
+            <p>Ustaw pożegnania dla twojego serwera!</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/goodbye" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Kolory</h1>
+            <p>Ustaw kolory wiadomości dla twojego serwera!</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/colors" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Autorespondery</h1>
+            <p>Ustawienia autoresponderów</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/autoresponders" class="btn-dash">Wybierz</a>
+        </div>
+
+
+        <div class="div-guild">
+            <h1>Permisje</h1>
+            <p>Ustaw permisje dla danych roli!</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/permissions" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Propozycje</h1>
+            <p>Ustaw kanały propozycji, i nimi zarządzaj!</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/proposals" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Antyinvite</h1>
+            <p>Ustaw blokade na wysyłanie zaproszeń</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/antyinvite" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Poziomy</h1>
+            <p>Ustaw system poziomów</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/leveling" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Embed Sender</h1>
+            <p>Skorzystaj z strony do wysyłania ładnych wiadomości</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/embed" class="btn-dash">Wybierz</a>
+        </div>
+        <div class="div-guild">
+            <h1>Ogłoszenia</h1>
+            <p>Zarządzaj ogłoszeniami</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/broadcast" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Snipe</h1>
+            <p>Zarządzaj snipe</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/snipe" class="btn-dash">Wybierz</a>
+        </div>
+
+        <div class="div-guild">
+            <h1>Autorole</h1>
+            <p>Ustawienia autorole</p>
+            <br>
+            <a href="/dashboard/<%= guild.id; %>/autorole" class="btn-dash">Wybierz</a>
+        </div>
+
+    </div>
+</div>

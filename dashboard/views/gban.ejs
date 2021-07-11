@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("partials/imports") %>
+</head>
+
+<body>
+<%- include("elements/navbar") %>
+
+<div class="conteiner">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div style="text-align: center;">
+        <h1>Zostałeś globalnie zbanowany!</h1>
+        <br>
+        <br>
+        <p>Powód: <%= userData.gban.reason; %></p>
+        <p>Data: <%= moment(userData.gban.date).format("LLLL"); %></p>
+        <p>Developer: <%= client.users.cache.get(userData.gban.developer)?.tag || "Nie znaleziono"; %></p>
+        <br>
+        <br>
+        <p>Uważasz ze zostałeś niesłusznie zbanowany? Wejdź na <a href="/support">Serwer Support</a></p>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>

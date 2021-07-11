@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+
+<%- include("../elements/navbar") %>
+<br>
+<br>
+<br>
+<div id="site">
+    <br>
+    <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+    <br>
+    <div class="conteiner">
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+            <a href="#vars" class="btn-dash">Zmienne</a>
+        </div>
+        <br>
+        <br>
+        <div class="option-das">
+            <section id="main">
+                <h1>Pożegnania</h1>
+                <br>
+                <br>
+                <label>Status</label>
+                <br>
+                <br>
+                <label class="switch">
+                    <input type="checkbox" id="status" <%= settings.goodbye.status ? "checked" : ""; %>>
+                    <span class="slider round"></span>
+                </label>
+                <br>
+                <br>
+                <br>
+                <label>Tytuł</label>
+                <br>
+                <textarea id="title" maxlength="2048"
+                          style="margin-top: 0px; margin-bottom: 0px; height: 49px;"><%= settings.goodbye.title; %></textarea>
+                <br>
+                <br>
+                <br>
+                <label>Kanał</label>
+                <br>
+                <select id="channel">
+                    <option>Brak</option>
+                    <% guild.channels.cache.filter((r) => r.type !== "voice" && r.type !== "category").sort((a, b) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <% if (r.id === settings.goodbye.channel) { %>
+                            <option value="<%= r.id; %>" selected="selected"><%= r.name; %></option>
+                        <% } else { %>
+                            <option value="<%= r.id; %>"><%= r.name; %></option>
+                        <% } %>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <br>
+                <label>Kolor</label>
+                <br>
+                <input type="color" id="color" value="<%= settings.goodbye.color %>">
+                <br>
+                <br>
+                <br>
+                <label>Wiadomość</label>
+                <br>
+                <textarea id="message" maxlength="2048"
+                          style="margin-top: 0px; margin-bottom: 0px; height: 103px;"><%= settings.goodbye.message %></textarea>
+                <br>
+                <br><br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+                <br>
+                <hr>
+                <br>
+            </section>
+            <br>
+            <br>
+            <section id="vars">
+                <h1>Lista zmiennych</h1>
+                <p><code>{guild}</code> - Nazwa serwera (<code>Delover | Wsparcie</code>)</p>
+                <p><code>{guild.members}</code> - Ilość osób (<code>139</code>)</p>
+                <p><code>{guild.id}</code> - ID serwera (<code>703156079890268180</code>)</p>
+                <p><code>{user}</code> - Oznaczenie użytkownika (<code>@Aleks1123#0001</code>)</p>
+                <p><code>{user.username}</code> - Nazwa użytkownika (<code>Aleks1123</code>)</p>
+                <p><code>{user.tag}</code> - Tag użytkownika (<code>Aleks1123#0001</code>)</p>
+                <p><code>{user.id}</code> - ID użytkownika (<code>435029733344804874</code>)</p>
+            </section>
+        </div>
+
+    </div>
+</div>
+<script>
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+        const title = document.getElementById("title").value;
+        const message = document.getElementById("message").value;
+        const color = document.getElementById("color").value;
+        const channel = document.getElementById("channel").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/goodbye/", {
+            method: "POST",
+            body: JSON.stringify({ status, title, message, color, channel }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+</script>
+</body>

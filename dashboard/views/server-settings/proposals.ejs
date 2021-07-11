@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Propozycje</h1>
+                <br>
+                <label class="switch">
+                    <input type="checkbox" id="status" <%= settings.proposals.status ? "checked" : "" %>>
+                    <span class="slider round"></span>
+                </label>
+                <br>
+                <br>
+                <label>Komentarz</label>
+                <br>
+                <br>
+                <textarea id="comment" maxlength="10"
+                          style="margin-top: 0px; margin-bottom: 0px; height: 49px;"><%= settings.proposals.comment; %></textarea>
+                <br>
+                <br>
+                <br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+            </div>
+            <br>
+            <br>
+            <hr>
+            <br>
+            <br>
+            <div class="option-das">
+                <h1>Propozycje</h1>
+                <br>
+                <br>
+                <div id="channels">
+                    <% if (!settings.proposals.channels.length) { %>
+                        <div class="div-prefix" style="width: 60%" id="no-channels">
+                            <p>Nie posiadasz żadnych kanałów</p>
+                        </div>
+                    <% } %>
+                    <% settings.proposals.channels.forEach(p => { %>
+                        <div class="div-prefix" id="<%= p %>" style="width: 60%">
+                            <p><%= client.channels.cache.get(p)?.name; %></p>
+                            <button onclick="removeChannel('<%= p %>')"><i class="bx bx-trash"></i></button>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <br>
+                <br>
+                <label>Dodaj kanał</label>
+                <br>
+                <br>
+                <select id="channel">
+                    <% guild.channels.cache.filter((r) => r.type !== "voice" && r.type !== "category").sort((a, b) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <% if (!settings.proposals.channels.includes(r.id)) { %>
+                            <option value="<%= r.id; %>"><%= r.name; %></option>
+                        <% } %>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="addChannel()" class="btn-add">Dodaj</button>
+            </div>
+            <br>
+        </section>
+
+    </div>
+</div>
+</body>
+<script>
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+        const comment = document.getElementById("comment").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/proposals/", {
+            method: "POST",
+            body: JSON.stringify({ status, comment }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+    const removeChannel = async (channel) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/proposals/channels/remove", {
+            method: "POST",
+            body: JSON.stringify({ channel: channel }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(channel).parentNode.id === "channels") document.getElementById(channel).parentNode.removeChild(document.getElementById(channel));
+            else document.getElementById(channel).parentNode.remove();
+
+            if (document.getElementById("channels").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-channels" class="div-prefix" style="width: 60%"><p>Nie posiadasz żadnych kanałów</p></div>`;
+                const mainDiv = document.getElementById("channels");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addChannel = async () => {
+        const channel = document.getElementById("channel").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/proposals/channels/add", {
+            method: "POST",
+            body: JSON.stringify({ channel: channel }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const channelDiv = document.createElement("div");
+            channelDiv.innerHTML = `<div class="div-prefix" id="${channel}" style="width: 60%"><p>${body.data.channelName}</p><button onclick="removeChannel('${channel}')"><i class="bx bx-trash"></i></button></div>`;
+            const mainDiv = document.getElementById("channels");
+            mainDiv.appendChild(channelDiv);
+            console.log(document.getElementById("channels").children[0].innerHTML.includes("Nie posiadasz żadnych kanałów"));
+            if (document.getElementById("no-channels")) {
+                if (document.getElementById("no-channels").parentNode.id === "channels") document.getElementById("no-channels").parentNode.removeChild(document.getElementById("no-channels"));
+                else document.getElementById("no-channels").parentNode.remove();
+            }
+        }
+    };
+</script>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("../partials/imports") %>
+</head>
+
+<body>
+
+<%- include("../elements/navbar") %>
+
+<div class="conteiner">
+    <div class="div-user">
+        <img src="<%= member.displayAvatarURL() ;%>">
+        <h1><%= user.username ;%>, Witaj w ustawieniach użytkownika!</h1>
+        <p>Możesz tutaj konfigurować swoje backupy, przypomnienia (już niedługo)</p>
+        <a href="/dashboard/api/auth/logout" class="btn-logout">Wyloguj</a>
+        <a href="/dashboard" class="btn-dash">Powrót</a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="option-das">
+        <h1>Niestety ten panel jest jeszcze w trakcie prac. </h1>
+        <br>
+        <a class="btn-dash" href="/dashboard/profile/beta">Przetestuj wersje BETA</a>
+    </div>
+</div>
+</body>

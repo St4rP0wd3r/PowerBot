@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Rola muted</h1>
+                <br>
+                <br>
+                <button onclick="auto()" class="btn-add">Konfiguruj automatycznie role muted</button>
+                <br>
+                <br>
+                <label>Wybierz role Muted</label>
+                <br>
+                <br>
+                <select id="mutedRole">
+                    <option>Brak</option>
+                    <% guild.roles.cache.filter(x => x.id !== guild.roles.everyone.id).sort((b, a) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <% if (r.id === settings.mutedRole) { %>
+                            <option selected="selected" value="<%= r.id; %>"><%= r.name; %></option>
+                        <% } else { %>
+                            <option value="<%= r.id; %>"><%= r.name; %></option>
+                        <% } %>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="save()" class="btn-add">Zapisz</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+    const save = async () => {
+        const role = document.getElementById("mutedRole").value;
+
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/main/muted", {
+            method: "POST",
+            body: JSON.stringify({ mutedRole: role }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const auto = async () => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/main/muted/auto", {
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+</script>
+</html>

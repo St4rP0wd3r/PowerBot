@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("partials/imports") %>
+</head>
+
+<body>
+<%- include("elements/navbar") %>
+
+<div class="conteiner">
+    <br>
+    <div style="text-align: center;">
+        <br>
+        <br>
+        <br>
+        <h1>Topka poziomów na serwerze <%= guild.name; %></h1>
+        <br>
+        <br>
+        <% levels.forEach(async user => { %>
+            <div class="div-guild" style="max-width:100%;">
+                <img src="<%= user.user.user.displayAvatarURL({ dynamic: true }) %>">
+                <br>
+                <br>
+                <br>
+
+                <p><%= user.user.user.tag %></p>
+                <p>Level: <%= user.level %></p>
+            </div>
+
+        <% }) %>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <%- include("partials/imports") %>
+</head>
+<body>
+<%- include("elements/navbar") %>
+<div class="conteiner">
+    <div class="div-user">
+        <img src="<%= member.displayAvatarURL({ dynamic: true }); %>">
+        <h1><%= member.username; %>, Witaj w Panelu!</h1>
+        <a href="/dashboard/profile/" class="btn-dash">Ustawienia użytkownika</a>
+        <a href="/dashboard/api/auth/logout" class="btn-logout">Wyloguj</a>
+        <br>
+        <br>
+    </div>
+    <br>
+    <!--    <b><p style="text-align: center; font-size: 30px">Twoje serwery:</p></b>-->
+    <div class="row">
+        <%
+        req.user?.guilds?.forEach(guild => {
+            const permsOnGuild = new Permissions(guild.permissions);
+            if (!permsOnGuild.has("ADMINISTRATOR") && !(client.guilds.cache.get(guild.id) && client.config.perms.developer.includes(user.id))) return; %>
+        <div class="div-guild">
+            <img src="<%= guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp` : "https://cdn.discordapp.com/embed/avatars/0.png"; %>">
+            <br>
+            <br>
+
+            <h1><%= guild.name %></h1>
+            <p><%= permsOnGuild.has("ADMINISTRATOR") ? guild.owner ? "Właściciel" : "Administrator" : "Developer" %></p>
+            <br>
+            <% if (client.guilds.cache.get(guild.id)) { %>
+                <a href="/dashboard/<%= guild.id %>" class="btn-dash">Zarządzaj</a>
+            <% } else { %>
+                <a href="https://discord.com/api/oauth2/authorize?client_id=<%= client.user.id; %>&permissions=347208&guild_id=<%= guild.id; %>&redirect_uri=<%= client.config.dashboard.redirects.add; %>&response_type=code&scope=identify%20bot%20applications.commands"
+                   class="btn-dash">Dodaj bota</a>
+            <% } %>
+        </div>
+        <% }) %>
+    </div>
+</div>
+</body>

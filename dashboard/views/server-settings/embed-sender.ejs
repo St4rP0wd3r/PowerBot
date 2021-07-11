@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <section id="main">
+            <div class="option-das">
+                <h1>Wiadomość</h1>
+                <br>
+                <br>
+                <br>
+                <label>Tytuł*</label>
+                <br>
+                <br>
+                <label for="title"></label><textarea id="title" placeholder="Twój tytuł"
+                                                     maxlength="256"
+                                                     style="margin-top: 0; margin-bottom: 0; height: 49px;"> </textarea>
+                <br>
+                <br>
+                <label>Opis*</label>
+                <br>
+                <br>
+                <label for="desc"></label><textarea id="desc" placeholder="Twój opis"
+                                                    maxlength="2048"
+                                                    style="margin-top: 0; margin-bottom: 0; height: 259px;"> </textarea>
+                <br>
+                <br>
+                <label>Kolor*</label>
+                <br>
+                <br>
+                <label for="color"></label><input type="color" id="color" value="#2ecc71">
+                <br>
+                <br>
+                <h1>Webhook</h1>
+                <label for="webhookAvatar"></label><input type="text" id="webhookAvatar" placeholder="Link do avataru">
+                <br>
+                <br>
+                <label for="webhookName"></label><input type="text" id="webhookName" placeholder="Nazwa webhooka"
+                                                        maxlength="20">
+                <br>
+                <br>
+                <code>TIP: Pozostaw puste by trafil tam twój avatar i nazwa</code>
+                <br>
+                <br>
+                <br>
+
+                <h1>Kanał</h1>
+                <br>
+                <br>
+                <label for="channel"></label><select id="channel">
+                    <% guild.channels.cache.filter((r) => r.type !== "voice" && r.type !== "category").sort((a, b) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                        <option value="<%= r.id; %>"><%= r.name; %></option>
+                    <% }); %>
+                </select>
+                <br>
+                <br>
+                <button onclick="send()" class="btn-add">Wyślij</button>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+<script>
+    const send = async () => {
+        const title = document.getElementById("title").value;
+        const desc = document.getElementById("desc").value;
+        const color = document.getElementById("color").value;
+        const channel = document.getElementById("channel").value;
+
+        const webhookAvatarURL = document.getElementById("webhookAvatar").value;
+        const webhookName = document.getElementById("webhookName").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/embed/", {
+            method: "POST",
+            body: JSON.stringify({ title, description: desc, color, channel, webhookName, webhookAvatarURL }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+
+        if (body.success) {
+
+        }
+    };
+</script>
+</html>

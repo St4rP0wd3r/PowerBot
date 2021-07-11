@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <%- include("../partials/imports") %>
+</head>
+<body>
+<%- include("../elements/navbar") %>
+<div id="site">
+    <div class="conteiner">
+        <br>
+        <br>
+        <div id="alert" style="position: fixed; right: 15px; width:35%"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <a href="/dashboard/<%= guild.id; %>/" class="btn-dash">Powrót</a>
+        </div>
+        <br><br>
+        <div class="option-das">
+            <h1>Poziomy</h1>
+            <br>
+            <label class="switch">
+                <input type="checkbox" id="status" <%= settings.leveling.status ? "checked" : "" %>>
+                <span class="slider round"></span>
+            </label>
+            <br>
+            <br>
+            <h1>Wiadomość</h1>
+            <br>
+            <br>
+            <label>Treść</label>
+            <br>
+            <br>
+            <input type="text" id="message-content" placeholder="Wiadomość"
+                   value="<%= settings.leveling.message.text %>">
+            <br>
+            <br>
+            <label>Embed</label>
+            <br>
+            <br>
+            <label class="switch">
+                <input type="checkbox" id="message-embed" <%= settings.leveling.message.embed ? "checked" : "" %>>
+                <span class="slider round"></span>
+            </label>
+            <br>
+            <br>
+            <br>
+            <label> Mnożnik </label>
+            <br>
+            <br>
+            <input type="number" id="xp" placeholder="Mnożnik"
+                   value="<%= settings.leveling.xpNeeded %>"
+            <br>
+            <br>
+            <br>
+            <button onclick="save()" class="btn-add">Zapisz</button>
+            <br>
+            <br>
+            <br>
+            <br>
+            <section id="vars">
+                <h1>Lista zmiennych</h1>
+                <p><code>{guild}</code> - Nazwa serwera (<code>Delover | Wsparcie</code>)</p>
+                <p><code>{guild.members}</code> - Ilość osób (<code>139</code>)</p>
+                <p><code>{guild.id}</code> - ID serwera (<code>703156079890268180</code>)</p>
+                <p><code>{user}</code> - Oznaczenie użytkownika (<code>@Aleks1123#0001</code>)</p>
+                <p><code>{user.username}</code> - Nazwa użytkownika (<code>Aleks1123</code>)</p>
+                <p><code>{user.tag}</code> - Tag użytkownika (<code>Aleks1123#0001</code>)</p>
+                <p><code>{user.id}</code> - ID użytkownika (<code>435029733344804874</code>)</p>
+                <p><code>{level}</code> - Poziom użytkownika (<code>1</code>)</p>
+                <p><code>{xp}</code> - XP użytkownika (<code>12</code>)</p>
+            </section>
+        </div>
+        <br>
+        <br>
+        <hr>
+        <br>
+        <br>
+        <div class="option-das">
+            <h1>Lista roli za poziom</h1>
+            <br>
+            <br>
+            <div id="roles">
+                <% if (!settings.leveling.roles.length) { %>
+                    <div class="div-prefix" style="width: 60%" id="no-roles">
+                        <div class="prefix">
+                            <p>Nie posiadasz żadnych roli</p>
+                        </div>
+                    </div>
+                <% } %>
+                <% settings.leveling.roles.forEach(p => { %>
+                    <div class="div-prefix" style="width: 60%; text-align: left; min-height: 70px" id="<%= p.level %>">
+                        <button onclick="removeRole('<%= p.level %>')"><i class="bx bx-trash"></i></button>
+                        <p style="float: none;">Poziom: <%= p.level %></p>
+                        <br>
+                        <p style="float: none;">Rola: <%= req.guild.roles.cache.get(p.roleid)?.name %></p>
+                    </div>
+                <% }) %>
+            </div>
+            <br>
+            <br>
+            <label>Dodaj role poziomu</label>
+            <br>
+            <br>
+            <select id="role">
+                <% guild.roles.cache.filter(x => x.id !== guild.roles.everyone.id).sort((b, a) => a.rawPosition - b.rawPosition).forEach((r) => { %>
+                    <option value="<%= r.id; %>"><%= r.name; %></option>
+                <% }); %>
+            </select>
+            <br>
+            <br>
+            <input type="number" id="level" placeholder="Poziom" maxlength="5">
+            <br>
+            <br>
+            <button onclick="addRole()" class="btn-add">Dodaj</button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const removeRole = async (level) => {
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/leveling/roles/remove", {
+            method: "POST",
+            body: JSON.stringify({ level }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        if (body.success) {
+            if (document.getElementById(level).parentNode.id === "roles") document.getElementById(level).parentNode.removeChild(document.getElementById(level));
+            else document.getElementById(level).parentNode.remove();
+
+            if (document.getElementById("roles").children.length === 0) {
+                const prefixDiv = document.createElement("div");
+                prefixDiv.innerHTML = `<div id="no-roles" class="div-prefix" style="width: 60%"><p>Nie posiadasz żadnych roli</p></div>`;
+                const mainDiv = document.getElementById("roles");
+                mainDiv.appendChild(prefixDiv);
+            }
+        }
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+
+    const addRole = async () => {
+        const role = document.getElementById("role").value;
+        const level = document.getElementById("level").value;
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/leveling/roles/add", {
+            method: "POST",
+            body: JSON.stringify({ role, level: level }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+        if (body.success) {
+            const roleDiv = document.createElement("div");
+            roleDiv.innerHTML = `<div class="div-prefix" style="width: 60%; text-align: left; min-height: 70px" id="${level}"><button onclick="removeRole('${level}')"><i class="bx bx-trash"></i></button><p style="float: none;">Poziom: ${level}</p><br><p style="float: none;">Rola: ${body.data.roleName}</p></div>`;
+            const mainDiv = document.getElementById("roles");
+            mainDiv.appendChild(roleDiv);
+
+            if (document.getElementById("no-roles")) {
+                if (document.getElementById("no-roles").parentNode.id === "roles") document.getElementById("no-roles").parentNode.removeChild(document.getElementById("no-roles"));
+                else document.getElementById("no-roles").parentNode.remove();
+            }
+        }
+    };
+
+    const save = async () => {
+        const status = document.getElementById("status").checked;
+        const xp = document.getElementById("xp")?.value;
+        const messageEmbed = document.getElementById("message-embed").checked;
+        const messageContent = document.getElementById("message-content").value;
+
+        const body = await fetch("/dashboard/api/settings/<%= guild.id %>/leveling/", {
+            method: "POST",
+            body: JSON.stringify({
+                status, message: {
+                    embed: messageEmbed,
+                    text: messageContent,
+                }, xp: xp ? xp : null,
+            }),
+            headers: { "Content-type": "application/json" },
+        }).then(x => x.json()).catch(() => window.location.reload());
+        const div = document.getElementById("alert");
+        div.innerHTML = `<div class="alert ${body.alert.type} alert-dismissible fade show" role="alert">${body.alert.message}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+        setTimeout(() => {
+            $(".alert").alert("close");
+        }, 3000);
+    };
+</script>
+</html>

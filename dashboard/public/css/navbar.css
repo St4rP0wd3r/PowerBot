@@ -1,0 +1,156 @@
+.mynavbar {
+    font-family: "Poppins", sans-serif;
+    color: white;
+    z-index: 2;
+    padding: 3px 0;
+    transition: all 0.3s ease;
+}
+
+.mynavbar .content {
+    padding-left: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mynavbar .logo a {
+    color: white;
+    font-size: 30px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mynavbar .menu-list {
+    display: inline-flex;
+}
+
+.menu-list li {
+    padding-right: 20px;
+    list-style: none;
+}
+
+.menu-list li a {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 25px;
+    padding: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.menu-list li a:hover {
+    color: #d4d4d4;
+}
+
+
+.icon {
+    font-size: 20px;
+    cursor: pointer;
+    display: none;
+}
+
+.menu-list .cancel-btn {
+    position: absolute;
+    right: 30px;
+    top: 20px;
+}
+
+@media (max-width: 1530px) {
+    .content {
+        padding: 0 60px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .content {
+        padding: 0 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .content {
+        padding: 0 30px;
+    }
+}
+
+@media (max-width: 968px) {
+    body.disabled-nav {
+        overflow: hidden;
+    }
+
+    .icon {
+        display: block;
+    }
+
+    .icon.hide {
+        display: none;
+    }
+
+    .mynavbar .menu-list {
+        position: fixed;
+        height: 100vh;
+        width: 100%;
+        max-width: 100%;
+        left: -100%;
+        top: 0;
+        display: block;
+        padding: 40px 0;
+        text-align: center;
+        background: #1d1e21;
+        transition: all 0.3s ease;
+    }
+
+    .mynavbar.show .menu-list {
+        left: 0;
+    }
+
+    .mynavbar ul {
+        margin-top: 0;
+    }
+
+    .mynavbar .menu-list li {
+        margin-top: 45px;
+    }
+
+    .mynavbar .menu-list li a {
+        font-size: 23px;
+        margin-left: -100%;
+        transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .mynavbar.show .menu-list li a {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    .mynavbar .logo a {
+        font-size: 27px;
+    }
+}
+
+@media (max-width: 500px) {
+    .mynavbar .logo a {
+        padding: 20px;
+    }
+}
+
+
+@media (max-width: 1530px) {
+    .content {
+        padding: 0 60px;
+    }
+}
+
+@media (max-width: 1400px) {
+    .content {
+        padding: 0 40px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .content {
+        padding: 0 30px;
+    }
+}
